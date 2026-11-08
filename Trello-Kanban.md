@@ -1,0 +1,1 @@
+https://trello.com/invite/b/6aeb79f7f801a51c9b7fd908/ATTIb3c9688c04f4acd968d63a467e87d46955FFE04E/tareagoya
