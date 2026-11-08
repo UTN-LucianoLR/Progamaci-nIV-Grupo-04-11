@@ -2,6 +2,8 @@ from datetime import date
 from rest_framework import serializers
 from .models import Project, Task, Tag
 
+from .services import HolidayService
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,6 +13,8 @@ class TagSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
+
+    due_on_holiday = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
@@ -53,6 +57,11 @@ class TaskSerializer(serializers.ModelSerializer):
                     "ninguna tarea completada todavía."
                 )
         return data
+
+    def get_due_on_holiday(self, obj):
+        if not obj.due_date:
+            return False
+        return HolidayService.is_holiday(obj.due_date)
 
 
 # Serializer de Project (depende de Task)
