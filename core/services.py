@@ -33,6 +33,8 @@ class TaskService:
 
 class HolidayService:
     API_URL = "https://date.nager.at/api/v3/PublicHolidays/{year}/{country_code}"
+    COUNTRY_CODE = "US"
+    TIMEOUT = 5  # segundos máximos de espera a la API
 
     @classmethod
     def get_holidays(cls, year: int) -> list[str]:
@@ -41,7 +43,8 @@ class HolidayService:
         if cached is not None:
             return cached
         try:
-            response = requests.get(cls.API_URL.format(year=year, timeout="US"))
+            url = cls.API_URL.format(year=year, country_code=cls.COUNTRY_CODE)
+            response = requests.get(url, timeout=cls.TIMEOUT)
             response.raise_for_status()
             dates = [item["date"] for item in response.json()]
             cache.set(cache_key, dates, timeout=60 * 60 * 24)
@@ -86,6 +89,7 @@ class MembershipService:
             project=project,
             role="admin"
         ).exists()
+
 
 class NotificationService:
 
