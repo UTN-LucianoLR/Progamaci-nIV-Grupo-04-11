@@ -1,4 +1,7 @@
+import logging
 import requests
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 from django.core.cache import cache
 from django.core.mail import send_mail
@@ -9,6 +12,8 @@ from rest_framework.exceptions import ValidationError
 
 from .models import Task, Project, ProjectMembership
 from .repositories import TaskRepository
+
+logger = logging.getLogger(__name__)
 
 
 class TaskService:
@@ -95,31 +100,41 @@ class NotificationService:
 
     @staticmethod
     def notify_task_created(task):
-        subject = f"Nueva tarea: {task.title}"
-        message = (
-            f"Se creó una nueva tarea en el proyecto {task.project.name}."
-        )
-
-        members = ProjectMembership.objects.filter(
-            project=task.project
-        ).select_related("user")
-
-        for membership in members:
-            NotificationService._send(
-                subject,
-                message,
-                membership.user.email
-            )
+        NotificationService._send(task.project_id, {
+            "event": "task_created",
+            "task_id": task.id,
+            "title": task.title,
+        })
 
     @staticmethod
-    def _send(subject, message, recipient):
-        if not recipient:
-            return
+    def notify_task_updated(task):
+        NotificationService._send(task.project_id, {
+            "event": "task_updated",
+            "task_id": task.id,
+            "title": task.title,
+            "status": task.status,
+        })
 
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [recipient],
-            fail_silently=True
-        )
+    @staticmethod
+    def notify_task_completed(task):
+        NotificationService._send(task.project_id, {
+            "event": "task_completed",
+            "task_id": task.id,
+            "title": task.title,
+        })
+
+    @staticmethod
+    def _send(project_id, payload):
+        channel_layer = get_channel_layer()
+        if not channel_layer:
+            return
+        try:
+            async_to_sync(channel_layer.group_send)(
+                f"project_{project_id}",
+                {
+                    "type": "task_notification",
+                    "payload": payload,
+                },
+            )
+        except Exception:
+            logger.exception("No se pudo enviar la notificación en tiempo real")

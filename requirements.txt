@@ -48,3 +48,4 @@ pytest-django
 pytest-cov
 psycopg[binary]
 whitenoise
+django-cors-headers

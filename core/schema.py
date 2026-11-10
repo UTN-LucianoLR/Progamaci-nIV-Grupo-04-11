@@ -57,7 +57,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_all_projects(root, info):
-        return MembershipService.projects_for(info.context.user)
+        return MembershipService.projects_for(info.context.user).prefetch_related("tasks")
 
     def resolve_task(root, info, id):
         return tasks_visible_for(info.context.user).filter(pk=id).first()
