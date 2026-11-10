@@ -1,32 +1,24 @@
-from django.http import JsonResponse
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from .repositories import TaskRepository
-from .serializers import ProjectSerializer, TaskSerializer
-
-from rest_framework.exceptions import PermissionDenied
-from .permissions import IsProjectAdminOrReadOnly
- 
-from django.db import transaction
+import logging
 
 from django.contrib.auth.models import User
-from rest_framework import generics, permissions
-from.serializers_auth import RegisterSerializer
-
+from django.db import transaction
+from django.http import JsonResponse
+from rest_framework import generics, permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-
-import logging
- 
-from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework_simplejwt.views import TokenObtainPairView
- 
-from .models import Project, ProjectMembership, SecurityLog
-from .throttles import LoginRateThrottle
 
+from .models import Project, ProjectMembership, SecurityLog
+from .permissions import IsProjectAdminOrReadOnly
+from .repositories import TaskRepository
+from .serializers import ProjectSerializer, TaskSerializer
+from .serializers_auth import RegisterSerializer
 from .services import MembershipService, NotificationService, TaskService
+from .throttles import LoginRateThrottle
 
 security_logger = logging.getLogger("security")
 

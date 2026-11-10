@@ -8,6 +8,6 @@ from core.graphql_views import JWTGraphQLView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("core.url")),
+    path("api/", include("core.urls")),
     path("graphql/", csrf_exempt(JWTGraphQLView.as_view(graphiql=True))),
 ]

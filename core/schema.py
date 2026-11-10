@@ -163,6 +163,7 @@ class UpdateTaskStatus(graphene.Mutation):
             return UpdateTaskStatus(errors=errors)
 
         task = serializer.save()
+        NotificationService.notify_task_updated(task)
 
         return UpdateTaskStatus(task=task, errors=[])
 
