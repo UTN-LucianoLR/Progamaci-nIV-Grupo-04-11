@@ -199,3 +199,13 @@ LOGGING = {
         "security": {"handlers": ["console"], "level": "WARNING", "propagate": False},
     },
 }
+
+
+# Seguridad HTTPS: se activa solo en el servidor (USE_HTTPS=True)
+USE_HTTPS = os.getenv("USE_HTTPS", "False") == "True"
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = USE_HTTPS
+SESSION_COOKIE_SECURE = USE_HTTPS
+CSRF_COOKIE_SECURE = USE_HTTPS
+SECURE_HSTS_SECONDS = 3600 if USE_HTTPS else 0
