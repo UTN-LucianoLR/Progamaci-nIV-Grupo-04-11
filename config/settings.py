@@ -27,7 +27,13 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",")
+_allowed_env = os.getenv("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [h for h in _allowed_env.split(",") if h] or [
+    "localhost",
+    "127.0.0.1",
+    "testserver",
+    "taskflow-api-progiv.onrender.com",
+]
 
 CSRF_TRUSTED_ORIGINS = [
     origen for origen in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if origen
