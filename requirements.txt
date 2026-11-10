@@ -37,3 +37,8 @@ ujson==6.1.0
 urllib3==2.8.0
 websocket-client==1.9.2
 zope.interface==8.7
+
+graphene-django==3.2.3
+graphene==3.4.3
+graphql-core==3.2.14
+graphql-relay==3.2.0

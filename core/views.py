@@ -41,7 +41,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsProjectAdminOrReadOnly]
  
     def get_queryset(self):
-        return MembershipService.projects_for(self.request.user)
+        return MembershipService.projects_for(self.request.user).order_by("id")
  
     def perform_create(self, serializer):
         # Quien crea el proyecto queda como su admin
@@ -70,7 +70,7 @@ class TaskViewSet(viewsets.ModelViewSet):
  
     def perform_create(self, serializer):
         self.check_project_admin(serializer.validated_data["project"])
-        task = serializer.save(owner=self.request.user)
+        task = serializer.save()
         NotificationService.notify_task_created(task)
  
     def perform_update(self, serializer):
